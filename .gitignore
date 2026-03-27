@@ -1,0 +1,38 @@
+# Environment
+.env
+*.env
+
+# YouTube OAuth tokens (SENSITIVE — never commit)
+token.json
+client_secrets.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.Python
+venv/
+env/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Output (large files)
+output/downloads/
+output/edited/
+output/final/
+
+# Logs
+*.log
+output/bot.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp

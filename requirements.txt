@@ -1,0 +1,40 @@
+# Core
+anthropic>=0.40.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+loguru>=0.7.2
+rich>=13.7.0
+click>=8.1.7
+schedule>=1.2.1
+
+# Video downloading
+yt-dlp>=2024.1.0
+praw>=7.7.1
+
+# Video editing
+moviepy>=1.0.3
+Pillow>=10.2.0
+imageio>=2.33.1
+imageio-ffmpeg>=0.4.9
+numpy>=1.26.0
+
+# Audio / TTS
+gTTS>=2.5.0
+pydub>=0.25.1
+elevenlabs>=1.0.0
+
+# YouTube API
+google-api-python-client>=2.116.0
+google-auth-httplib2>=0.2.0
+google-auth-oauthlib>=1.2.0
+
+# Trend analysis
+pytrends>=4.9.2
+
+# Subtitles / captions
+faster-whisper>=1.0.0
+
+# Utilities
+tenacity>=8.2.3
+aiohttp>=3.9.3
+httpx>=0.27.0
