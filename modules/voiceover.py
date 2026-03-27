@@ -177,7 +177,9 @@ def _render_gtts(script: str, output_path: Path) -> None:
 def create_voiceover_from_niche(
     niche: str,
     content_angle: str,
-    duration_seconds: int = 45,
+    duration_seconds: int = 30,
+    hook_suggestion: str = "",
+    style_notes: str = "",
 ) -> tuple[Path, str, list[str], str, str]:
     """
     Full pipeline: write script → render audio.
@@ -190,24 +192,31 @@ def create_voiceover_from_niche(
     import json
 
     # Generate script
-    prompt = f"""You are a viral YouTube Shorts scriptwriter.
+    word_count = int(duration_seconds * 2.3)
+    hook_line = f"\n- Start with this proven hook style: \"{hook_suggestion}\"" if hook_suggestion else ""
+    style_line = f"\n- Visual/editing style context: {style_notes}" if style_notes else ""
 
-Write a SHORT voiceover script for a YouTube Short about:
+    prompt = f"""You are a viral YouTube Shorts scriptwriter. You study what actually goes viral.
+
+Write a voiceover script for a YouTube Short:
 - Niche: {niche}
-- Content angle / topic: {content_angle}
-- Target duration: {duration_seconds} seconds
+- Content angle: {content_angle}
+- Target: {duration_seconds} seconds (~{word_count} words){hook_line}{style_line}
 
-Rules:
-1. Start with a POWERFUL hook in the first 3 words
-2. Keep sentences short
-3. End with a clear CTA
+Rules based on what goes viral in 2025-2026:
+1. First 2-3 words must be a POWERFUL hook — viewers decide in 1 second
+2. Every sentence = one clear idea, max 8 words
+3. Build curiosity or deliver value in every line
+4. No filler words ("um", "so basically", "in this video")
+5. End with a punchy CTA that feels natural ("Follow for more", "Comment if this helped", etc.)
+6. Write for SPEECH — short punchy sentences, not paragraphs
 
 Return ONLY a JSON object:
 {{
-  "full_script": "Complete script for TTS",
-  "lines": ["Hook line", "Line 2", ..., "CTA line"],
-  "hook": "Opening hook only",
-  "cta": "CTA sentence only"
+  "full_script": "Complete script as one block for TTS",
+  "lines": ["Hook line", "Line 2", "Line 3", ..., "CTA line"],
+  "hook": "The opening hook sentence only",
+  "cta": "The CTA sentence only"
 }}"""
 
     client = anthropic.Anthropic(api_key=config.ANTHROPIC_API_KEY)

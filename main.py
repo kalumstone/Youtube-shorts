@@ -114,26 +114,39 @@ def niches(niche: str, count: int) -> None:
 
     results = find_niches(target_niche=niche, count=count)
 
-    table = Table(title="Top YouTube Shorts Niches", border_style="cyan")
+    table = Table(title="Top YouTube Shorts Niches (2025-2026 Data)", border_style="cyan")
     table.add_column("#", style="dim", width=3)
     table.add_column("Niche", style="bold white")
     table.add_column("Score", style="green", justify="center")
-    table.add_column("Trend", style="yellow", justify="center")
-    table.add_column("Keywords", style="cyan")
-    table.add_column("Content Angles", style="white")
+    table.add_column("CPM", style="yellow", justify="center")
+    table.add_column("Length", style="magenta", justify="center")
+    table.add_column("Trend", style="cyan", justify="center")
+    table.add_column("Best Hook", style="white")
 
     for i, n in enumerate(results, 1):
         trend_str = f"{n.trending_score:.0f}" if n.trending_score is not None else "—"
+        cpm_str = f"${n.cpm:.2f}" if hasattr(n, "cpm") and n.cpm else "—"
+        length_str = f"{n.optimal_length}s" if hasattr(n, "optimal_length") else "—"
+        hook = n.hooks[0][:45] + "…" if hasattr(n, "hooks") and n.hooks else "—"
         table.add_row(
             str(i),
             n.name,
             f"{n.score:.1f}/10",
+            cpm_str,
+            length_str,
             trend_str,
-            ", ".join(n.keywords[:3]),
-            " | ".join(n.content_angles[:2]),
+            hook,
         )
 
     console.print(table)
+
+    # Also print content angles
+    for i, n in enumerate(results, 1):
+        angles = getattr(n, "content_angles", [])
+        if angles:
+            console.print(f"\n[bold cyan]#{i} {n.name} — Content Angles:[/bold cyan]")
+            for a in angles[:3]:
+                console.print(f"  [white]• {a}[/white]")
 
 
 @cli.command()
@@ -230,7 +243,9 @@ def _run_pipeline(
             vo_path, script, lines, hook, cta = create_voiceover_from_niche(
                 niche=niche.name,
                 content_angle=angle,
-                duration_seconds=45,
+                duration_seconds=getattr(niche, "optimal_length", 30),
+                hook_suggestion=niche.best_hook() if hasattr(niche, "best_hook") else "",
+                style_notes=getattr(niche, "style", ""),
             )
         except Exception as exc:
             logger.error(f"Voiceover failed: {exc}")
@@ -243,7 +258,7 @@ def _run_pipeline(
                 clip_path=clip.local_path,
                 voiceover_path=vo_path,
                 script_lines=lines,
-                hook_text=hook or niche.name,
+                hook_text=hook or niche.best_hook() if hasattr(niche, "best_hook") else hook or niche.name,
                 cta_text=cta,
                 background_music_path=_find_background_music(),
             )
